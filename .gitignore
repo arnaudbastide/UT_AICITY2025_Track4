@@ -1,0 +1,9 @@
+.venv/
+.venv-cpu
+.venv-gpu
+*.egg-info/
+__pycache__/
+*.py[cod]
+
+# Local image dataset
+/convenience_store/

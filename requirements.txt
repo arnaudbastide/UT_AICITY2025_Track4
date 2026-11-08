@@ -1,5 +1,7 @@
-git-lfs
-opencv-python
-numpy
-tqdm
-scikit-learn
+# Python 3.12 base environment: dataset preparation and conversion.
+# Model training/inference dependencies are separate; see README.md.
+# Git LFS is a system tool, not a Python dependency.
+numpy==1.26.4
+opencv-python==4.11.0.86
+tqdm>=4.66,<5
+scikit-learn>=1.4,<2

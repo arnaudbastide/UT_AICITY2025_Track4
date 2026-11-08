@@ -1,0 +1,18 @@
+# Shared Python 3.12 dependencies for local training and inference.
+-r requirements.txt
+matplotlib>=3.8,<3.10
+pillow>=10,<12
+PyYAML>=6.0.1,<7
+scipy>=1.13,<1.16
+pandas>=2.2,<3
+seaborn>=0.13,<0.14
+requests>=2.31,<3
+psutil>=5.9
+py-cpuinfo>=9
+thop>=0.1.1
+einops>=0.7,<1
+pycocotools>=2.0.7,<3
+tensorboard>=2.16,<3
+ensemble-boxes>=1.0.9,<2
+huggingface-hub>=0.23,<1
+safetensors>=0.4.3,<1

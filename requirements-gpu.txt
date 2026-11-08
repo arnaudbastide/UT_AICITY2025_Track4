@@ -1,0 +1,5 @@
+# CUDA 11.8 includes Pascal support for the Quadro P3000 (sm_61).
+# Install this before requirements-models.txt. No YOLOv13/FlashAttention.
+--index-url https://download.pytorch.org/whl/cu118
+torch==2.5.1+cu118
+torchvision==0.20.1+cu118

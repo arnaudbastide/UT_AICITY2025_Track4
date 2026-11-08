@@ -73,6 +73,83 @@ python infer_YR_Y10_Y13_WBF.py \
   --y13_model /model/y13l_best57.engine
 ```
 ___  
+## Local development (Python 3.12)
+
+Two environments are available. On this WSL machine their files live under
+`~/.virtualenvs/UT_AICITY2025_Track4/` on Linux storage, with links in the
+project directory to avoid slow package installation on the Windows drive:
+
+| Environment | Runtime | Model code |
+| --- | --- | --- |
+| `.venv-gpu` | PyTorch 2.5.1, CUDA 11.8 | YOLOR and the YOLOv10 fork; excludes YOLOv13 |
+| `.venv-cpu` | PyTorch 2.5.1, CPU only | YOLOR and the YOLOv13 fork, which also supports YOLOv10 |
+
+Activate either environment from the repository root:
+
+```bash
+source .venv-gpu/bin/activate
+# Or:
+source .venv-cpu/bin/activate
+```
+
+Both forks install a package named `ultralytics`. Install only the indicated
+fork in each environment to avoid overwriting it. YOLOR uses its own source
+path and remains available in both environments.
+
+To recreate the environments using Python 3.12:
+
+```bash
+python3.12 -m venv .venv-gpu
+.venv-gpu/bin/python -m pip install -r requirements-gpu.txt
+.venv-gpu/bin/python -m pip install -r requirements-models.txt -e ./train/YoloV10
+
+python3.12 -m venv .venv-cpu
+.venv-cpu/bin/python -m pip install -r requirements-cpu.txt
+.venv-cpu/bin/python -m pip install -r requirements-models.txt -e ./train/YoloV13
+```
+
+For YOLOR scripts or ensemble inference, expose its modules as well:
+
+```bash
+export PYTHONPATH="$PWD/train/YoloR${PYTHONPATH:+:$PYTHONPATH}"
+```
+
+Use `device=cpu` with the CPU environment's `yolo` command, or
+`--device cpu` for YOLOR and the ensemble scripts. For GPU commands use
+`device=0` with `yolo`, `--device 0` with YOLOR, and `--device cuda:0`
+with the ensemble inference script. CPU inference requires `.pt` checkpoints;
+TensorRT `.engine` files require NVIDIA GPU hardware.
+
+The CPU environment uses the YOLOv13 fork's built-in PyTorch attention
+fallback, so FlashAttention is not installed. The GPU environment uses CUDA
+11.8 wheels to retain Pascal support for the Quadro P3000. The local GPU
+is outside [FlashAttention-2's supported architectures](https://github.com/Dao-AILab/flash-attention#nvidia-cuda-support).
+The [PyTorch version guide](https://pytorch.org/get-started/previous-versions/)
+documents the selected PyTorch/torchvision pairing and wheel indexes.
+
+`requirements.txt` covers data preparation. `requirements-models.txt` adds
+training and inference packages. NumPy 1.26.4 and OpenCV 4.11.0.86 retain
+NumPy 1.x compatibility on Python 3.12. Git LFS is an operating-system tool,
+not a pip dependency. The local `convenience_store/` image folder and virtual
+environments are excluded from Git.
+
+### Original dependency audit
+
+The instructions below preserve the original reproduction environments.
+Use the profiles above for new Python 3.12 development:
+
+- YOLOR's original documented PyTorch 1.13.0 and NumPy 1.23.5 pins predate
+  Python 3.12; the new profiles use PyTorch 2.5.1 and NumPy 1.26.4.
+- YOLOv10's legacy requirements pin PyTorch 2.0.1, ONNX 1.14.0 and
+  ONNX Runtime 1.15.1, which lack Python 3.12 Linux wheels.
+- YOLOv13's legacy requirements include a Python 3.11-only FlashAttention
+  wheel and the same outdated ONNX pins. The new CPU profile omits these.
+- ONNX/TensorRT export, Gradio demos and `wbf_fuse_results.py`'s
+  MMDetection/MMEngine workflow are optional and are not installed by
+  these profiles. The `ensemble-boxes` inference dependency is included.
+- The CPU fork includes YOLOv10 model and legacy checkpoint compatibility
+  code. Validate the actual trained checkpoints before relying on outputs.
+
 # environments on Ubuntu :
 
 ## Installation
