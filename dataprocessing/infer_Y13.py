@@ -86,6 +86,6 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=str, required=True, help='Path to output JSON file')
     parser.add_argument('--conf', type=float, default=0.25, help='Confidence threshold')
     parser.add_argument('--iou', type=float, default=0.5, help='IoU threshold for NMS')
-    parser.add_argument('--device', type=int, default=0, help='CUDA device to use')
+    parser.add_argument('--device', type=str, default='cpu', help='Device to use: cpu or CUDA device index (e.g. 0)')
     args = parser.parse_args()
     main(args)

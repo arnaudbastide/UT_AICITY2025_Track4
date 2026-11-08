@@ -49,7 +49,7 @@ def main():
     args = parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
     device = torch.device(args.device)
-    model = load_yolor(args.yolor_model).to(device)
+    model = load_yolor(args.yolor_model, map_location=device).to(device)
     model.eval()
     submission = []
     sum_time = 0

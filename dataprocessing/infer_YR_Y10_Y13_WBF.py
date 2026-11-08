@@ -121,12 +121,14 @@ def main():
     args = parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
     device = torch.device(args.device)
+    use_half = device.type == 'cuda'
+    dtype = torch.float16 if use_half else torch.float32
 
     # Load models
     #cbam_model = load_yolor(args.cbam_model).to(device).half().eval()
     #siam_model = load_yolor(args.siam_model).to(device).half().eval()
     #y11_model = YOLO(args.y11_model)
-    yolor_model = load_yolor(args.yolor_model).to(device).half().eval()
+    yolor_model = load_yolor(args.yolor_model, map_location=device).to(device=device, dtype=dtype).eval()
     y10_model = YOLO(args.y10_model)
     y13_model = YOLO(args.y13_model)
 
@@ -151,7 +153,7 @@ def main():
         img_shape = img.shape[:2]
         image_id = get_image_id(os.path.basename(img_path))
         img_processed, ratio, pad = preprocess_image(img, args.img_size)
-        img_tensor = torch.from_numpy(img_processed).unsqueeze(0).to(device).half()
+        img_tensor = torch.from_numpy(img_processed).unsqueeze(0).to(device=device, dtype=dtype)
 
         t0 = time.time()
 
@@ -176,11 +178,11 @@ def main():
         #y11_boxes, y11_scores, y11_classes = postprocess_y11(results, img_shape, ratio, pad, args.y11_conf)
 
         with torch.no_grad():
-            results = y10_model.predict(img_tensor, imgsz=args.img_size, conf=args.y10_conf, iou=args.y10_iou, verbose=False,half=True)
+            results = y10_model.predict(img_tensor, imgsz=args.img_size, conf=args.y10_conf, iou=args.y10_iou, verbose=False, device=str(device), half=use_half)
         y10_boxes, y10_scores, y10_classes = postprocess_yolo(results, img_shape, ratio, pad, args.y10_conf)
 
         with torch.no_grad():
-            results = y13_model.predict(img_tensor, imgsz=args.img_size, conf=args.y13_conf, iou=args.y13_iou, verbose=False,half=True)
+            results = y13_model.predict(img_tensor, imgsz=args.img_size, conf=args.y13_conf, iou=args.y13_iou, verbose=False, device=str(device), half=use_half)
         y13_boxes, y13_scores, y13_classes = postprocess_yolo(results, img_shape, ratio, pad, args.y13_conf)
         
         

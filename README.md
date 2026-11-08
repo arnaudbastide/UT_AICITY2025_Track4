@@ -100,15 +100,20 @@ To recreate the environments using Python 3.12:
 
 ```bash
 python3.12 -m venv .venv-gpu
-.venv-gpu/bin/python -m pip install -r requirements-gpu.txt
-.venv-gpu/bin/python -m pip install -r requirements-models.txt -e ./train/YoloV10
+source .venv-gpu/bin/activate
+python -m pip install -r requirements-gpu.txt
+python -m pip install -r requirements-models.txt -e ./train/YoloV10
+deactivate
 
 python3.12 -m venv .venv-cpu
-.venv-cpu/bin/python -m pip install -r requirements-cpu.txt
-.venv-cpu/bin/python -m pip install -r requirements-models.txt -e ./train/YoloV13
+source .venv-cpu/bin/activate
+python -m pip install -r requirements-cpu.txt
+python -m pip install -r requirements-models.txt -e ./train/YoloV13
+deactivate
 ```
 
-For YOLOR scripts or ensemble inference, expose its modules as well:
+The installed environments expose YOLOR via `aicity_yolor.pth`. After
+manual recreation, expose its modules for YOLOR and ensemble inference:
 
 ```bash
 export PYTHONPATH="$PWD/train/YoloR${PYTHONPATH:+:$PYTHONPATH}"
